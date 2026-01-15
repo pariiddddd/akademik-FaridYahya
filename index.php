@@ -1,3 +1,14 @@
+<?php
+session_start();
+include "koneksi_akademik.php";
+
+
+if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
+    header("Location: login.php?pesan=Silakan Login Terlebih Dahulu");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,13 +20,40 @@
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-bold" href="#">SIAKAD</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link active" href="index.php">Data Mahasiswa</a></li>
         <li class="nav-item"><a class="nav-link" href="view_prodi.php">Data Program Studi</a></li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle me-1"></i> 
+                Halo, <?= htmlspecialchars($_SESSION['nama']); ?>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="edit_profil.php">
+                        <i class="bi bi-gear me-2"></i> Edit Profil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="logout.php">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </li>
       </ul>
     </div>
   </div>
@@ -24,7 +62,7 @@
 <div class="container">
     <?php if (isset($_GET['pesan'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            Pesan: <strong><?= $_GET['pesan']; ?></strong>
+            Pesan: <strong><?= htmlspecialchars($_GET['pesan']); ?></strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
@@ -51,7 +89,6 @@
                     </thead>
                     <tbody>
                     <?php
-                        include "koneksi_akademik.php";
                         $no = 1;
                         $sql = "SELECT m.*, p.nama_prodi, p.jenjang FROM mahasiswa m LEFT JOIN prodi p ON m.prodi_id = p.id ORDER BY m.nim ASC";
                         $tampil = $db->query($sql);
